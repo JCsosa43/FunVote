@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Votar — {{ evento[1] }}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --fucsia:#ff008c;
+  --amarillo:#ffd93d;
+  --verde:#72ff6a;
+  --fond-1:#1b0630;
+  --fond-2:#2a0f3f;
+  --pixel-shadow: 0 2px 0 rgba(0,0,0,0.2);
+}
+
+body{
+  background: radial-gradient(circle at 10% 10%, #25102b 0%, var(--fond-1) 30%, var(--fond-2) 100%);
+  min-height:100vh;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color:#fff;
+  padding:clamp(16px,4vw,28px);
+  margin:0;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
+  border-radius:14px;
+  box-shadow: 0 4px 20px rgba(12,6,30,0.35);
+  padding:16px;
+}
+
+h1{ font-weight:800; font-size:clamp(1.5rem,3vw,1.75rem); margin-bottom:0.5rem; }
+p.lead{ color:rgba(255,255,255,0.72); margin-top:0; }
+
+.criterio {
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  margin:4px;
+  font-weight:700;
+  font-size:0.9rem;
+  cursor:grab;
+  user-select:none;
+  color:#111;
+  background: linear-gradient(90deg,#ffd93d,#ff8ab0);
+  box-shadow: var(--pixel-shadow);
+  transition: transform .12s cubic-bezier(.2,.9,.2,1), box-shadow .12s;
+}
+.criterio:active { transform: scale(1.05) rotate(-2deg); }
+.criterio.dragging { opacity:.9; transform: rotate(-4deg) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+
+.participante {
+  min-height:120px;
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  transition: transform .16s, box-shadow .16s, border-color .12s;
+  border: 2px dashed rgba(255,255,255,0.04);
+  touch-action: none;
+}
+.participante.hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(255,255,255,0.25);
+  border-color: rgba(255,217,90,0.45);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+}
+
+.tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-items:center; }
+.tag {
+  padding:4px 8px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:0.8rem;
+  background: linear-gradient(90deg,#72ff6a,#ffd93d);
+  color:#082;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.counter {
+  position: absolute;
+  top:6px;
+  right:6px;
+  background: rgba(0,0,0,0.45);
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:800;
+  color:var(--amarillo, #ffd93d);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.btn-arcade{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:10px 16px;
+  border-radius:10px;
+  background: linear-gradient(90deg,#ff008c,#ffd93d);
+  color: #08021a;
+  font-weight:900;
+  box-shadow: 0 6px 20px rgba(255,0,140,0.12), inset 0 -2px 4px rgba(0,0,0,0.12);
+  border: none;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s;
+  width:100%;
+  max-width:220px;
+}
+.btn-arcade:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 10px 28px rgba(255,0,140,0.15); }
+.btn-arcade:active{ transform: translateY(1px) }
+
+.grid-part{
+  display:grid;
+  gap:12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+}
+
+#pool{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:flex-start;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+
+/* Modales */
+.modal {
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background: rgba(2,2,6,0.6); z-index:1200; padding:20px; visibility:hidden; opacity:0; transition:opacity .15s;
+}
+.modal.show{ visibility:visible; opacity:1 }
+.modal-card{
+  width:100%; max-width:380px; padding:16px; border-radius:12px; text-align:center; 
+  background:linear-gradient(180deg,rgba(255,255,255,0.02), rgba(255,255,255,0.01)); 
+  border:1px solid rgba(255,255,255,0.06);
+  max-height:80vh;
+  overflow-y:auto;
+}
+
+/* Botón volver minimalista */
+#backBtn{
+  position:fixed;
+  top:8px;
+  left:8px;
+  z-index:50;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,0.3);
+  box-shadow:0 2px 6px rgba(0,0,0,0.25);
+}
+#backBtn:hover{ background:rgba(255,255,255,0.25); }
+
+/* Responsive */
+@media (max-width:640px){
+  .criterio{ margin:4px 2px; font-size:0.8rem; }
+  .grid-part{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- BOTÓN VOLVER -->
+<button id="backBtn">←</button>
+
+<div class="card max-w-6xl mx-auto mt-12">
+  <header class="mb-4">
+    <h1>{{ evento[1] }}</h1>
+    <p class="lead">{{ evento[2] }}</p>
+  </header>
+
+  <section class="mb-6" id="voting-section">
+    {% if participantes %}
+    <div class="card mb-4">
+      <strong class="block mb-2">Criterios — arrastrá o tocá</strong>
+      <div id="pool">
+        {% for c in criterios %}
+          <div draggable="true" class="criterio" data-valor="1">{{ c }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="grid-part">
+      {% for p in participantes %}
+      <div class="participante card relative" data-nombre="{{ p['nombre'] }}">
+        <div class="counter">0</div>
+        <h3 style="font-weight:800">{{ p['nombre'] }}</h3>
+        <div class="tags mt-2"></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <footer class="mt-6 text-center">
+      <button id="sendBtn" class="btn-arcade">Enviar voto</button>
+      <p id="errorMsg" class="mt-2 text-pink-300 font-bold opacity-0 transition-opacity duration-200"></p>
+    </footer>
+    {% else %}
+      <p class="text-center opacity-70 mt-4">No hay participantes para este evento 😅</p>
+    {% endif %}
+  </section>
+</div>
+
+<!-- Modales -->
+<div id="alreadyModal" class="modal">
+  <div class="modal-card card">
+    <h2 style="font-weight:900; color:var(--fucsia)">👀 Lo sentimos</h2>
+    <p class="mt-2" style="color:rgba(255,255,255,0.78)">Ya realizaste tu voto en este evento.</p>
+    <div class="mt-4">
+      <button id="closeAlready" class="btn-arcade">Entiendo</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-card card">
+    <h2 style="font-weight:900; color:var(--fucsia)">Gracias por votar 🎉</h2>
+    <p class="mt-2" style="color:rgba(255,255,255,0.78)">Tu voto fue registrado. ¡Buena vibra!</p>
+    <div class="mt-4">
+      <button id="closeModal" class="btn-arcade">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="duplicateModal" class="modal">
+  <div class="modal-card card">
+    <h2 style="font-weight:900; color:var(--fucsia)">⚠️ Ups!</h2>
+    <p class="mt-2" style="color:rgba(255,255,255,0.78)">Ya asignaste este criterio a este participante.</p>
+    <div class="mt-4">
+      <button id="closeDuplicate" class="btn-arcade">Entiendo</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+const yaVotaste = {{ ya_votaste|tojson }};
+const criterios = document.querySelectorAll('.criterio');
+const participantes = Array.from(document.querySelectorAll('.participante'));
+const pool = document.getElementById('pool');
+
+function isMobileVertical() { return window.innerWidth < 640 && window.innerHeight > window.innerWidth; }
+
+function popAnimation(el) {
+  el.style.animation = 'pixelPop .28s cubic-bezier(.2,.8,.2,1)';
+  el.addEventListener('animationend', () => el.style.animation = '', { once: true });
+}
+
+function assignTag(participanteEl, criterioText) {
+  const existingTags = Array.from(participanteEl.querySelectorAll('.tag')).map(t => t.textContent);
+  if (existingTags.includes(criterioText)) {
+    document.getElementById('duplicateModal').classList.add('show');
+    return false;
+  }
+  const tag = document.createElement('div');
+  tag.className = 'tag';
+  tag.textContent = criterioText;
+  participanteEl.querySelector('.tags').appendChild(tag);
+  const counter = participanteEl.querySelector('.counter');
+  counter.textContent = parseInt(counter.textContent || '0', 10) + 1;
+  confetti({ particleCount: 12, spread: 50, origin: { y: 0.65 } });
+  return true;
+}
+
+if (yaVotaste) {
+  document.getElementById('voting-section').style.pointerEvents = 'none';
+  document.getElementById('alreadyModal').classList.add('show');
+  document.getElementById('closeAlready').addEventListener('click', () => window.location.href = '/');
+} else {
+  let draggingEl = null;
+
+  criterios.forEach(c => {
+    c.addEventListener('dragstart', e => {
+      if (isMobileVertical()) e.preventDefault();
+      draggingEl = c;
+      c.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', c.textContent);
+    });
+    c.addEventListener('dragend', () => { c.classList.remove('dragging'); draggingEl = null; });
+    c.addEventListener('mousedown', () => popAnimation(c));
+    c.addEventListener('click', () => {
+      if (!isMobileVertical()) return;
+      document.querySelectorAll('.criterio.selected').forEach(sel => sel.classList.remove('selected'));
+      c.classList.add('selected');
+    });
+  });
+
+  participantes.forEach(p => {
+    p.addEventListener('dragover', e => { e.preventDefault(); if (!isMobileVertical()) p.classList.add('hover'); });
+    p.addEventListener('dragleave', () => { if (!isMobileVertical()) p.classList.remove('hover'); });
+    p.addEventListener('drop', e => {
+      if (isMobileVertical()) return;
+      e.preventDefault();
+      p.classList.remove('hover');
+      const text = e.dataTransfer.getData('text/plain');
+      if (!text) return;
+      assignTag(p, text);
+    });
+    p.addEventListener('click', () => {
+      if (!isMobileVertical()) return;
+      const selected = document.querySelector('.criterio.selected');
+      if (!selected) return;
+      if (assignTag(p, selected.textContent)) selected.classList.remove('selected');
+    });
+  });
+
+  document.getElementById('closeDuplicate').addEventListener('click', () => document.getElementById('duplicateModal').classList.remove('show'));
+
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.addEventListener('click', async () => {
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.textContent = "";
+    errorMsg.style.opacity = 0;
+    sendBtn.disabled = true;
+
+    const votos = {};
+    participantes.forEach(p => {
+      const name = p.dataset.nombre;
+      const count = parseInt(p.querySelector('.counter').textContent || '0', 10);
+      if (count > 0) votos[name] = count;
+    });
+
+    if (Object.keys(votos).length === 0) {
+      errorMsg.textContent = "Asigná al menos 1 criterio antes de enviar 👀";
+      errorMsg.style.opacity = 1;
+      sendBtn.disabled = false;
+      return;
+    }
+
+    try {
+      const res = await fetch(window.location.pathname, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ votos })
+      });
+      if (res.ok) {
+        document.getElementById('modal').classList.add('show');
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.45 } });
+      } else {
+        errorMsg.textContent = "Hubo un error enviando tu voto. Intentá de nuevo 🚑";
+        errorMsg.style.opacity = 1;
+        sendBtn.disabled = false;
+      }
+    } catch (err) {
+      console.error(err);
+      errorMsg.textContent = "Error de conexión. Revisá tu internet 💀";
+      errorMsg.style.opacity = 1;
+      sendBtn.disabled = false;
+    }
+  });
+
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('modal').classList.remove('show');
+    window.location.href = '/';
+  });
+}
+
+// BOTÓN VOLVER
+document.getElementById('backBtn').addEventListener('click', () => {
+  window.history.back();
+});
+</script>
+</body>
+</html>

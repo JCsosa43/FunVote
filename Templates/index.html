@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunVote - Eventos</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;700;900&display=swap');
+
+:root{
+  --fucsia:#ff008c;
+  --amarillo:#ffd93d;
+  --verde:#72ff6a;
+  --vio:#7c3aed;
+  --bg1:#12001e;
+  --bg2:#1a0130;
+  --bg3:#2a0f3f;
+}
+
+body{
+  background: radial-gradient(circle at 20% 20%, var(--bg1), var(--bg2) 40%, var(--bg3) 100%);
+  color:white;
+  font-family:'Inter', sans-serif;
+  margin:0;
+  min-height:100vh;
+}
+
+header{
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.07);
+  padding:1rem 1.5rem;
+  position:sticky; top:0;
+  z-index:50;
+  box-shadow:0 6px 22px rgba(0,0,0,0.4);
+}
+
+header h1{
+  font-family:'Bangers', cursive;
+  font-size:2.4rem;
+  color:white;
+  letter-spacing:2px;
+  text-shadow:0 0 8px var(--amarillo);
+}
+
+header a{
+  background:linear-gradient(90deg,var(--fucsia),var(--amarillo));
+  padding:0.5rem 1rem;
+  border-radius:12px;
+  font-weight:700;
+  color:#08021a;
+  text-decoration:none;
+  transition:transform 0.2s;
+  box-shadow:0 6px 18px rgba(255,0,140,0.3);
+}
+header a:hover{ transform:scale(1.08); }
+
+main{
+  padding:2rem 1rem;
+  max-width:900px;
+  margin:auto;
+}
+
+h2{
+  font-family:'Bangers', cursive;
+  font-size:2.7rem;
+  color:var(--amarillo);
+  text-align:center;
+  margin-bottom:0.5rem;
+  text-shadow:0 0 14px rgba(255,229,94,0.6);
+}
+
+.lead{
+  text-align:center;
+  opacity:0.8;
+  margin-bottom:1.8rem;
+}
+
+.grid-events{
+  display:flex;
+  flex-direction:column;
+  gap:1.4rem;
+  transition: all 0.3s;
+}
+
+@media(min-width:640px){
+  .grid-events{ flex-direction:row; flex-wrap:wrap; gap:1rem; }
+}
+
+.event-card{
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015));
+  padding:1rem 1.2rem;
+  border-radius:18px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.55);
+  opacity:0;
+  transform:translateY(15px);
+  transition:all .35s cubic-bezier(.2,.8,.2,1);
+  flex:1 1 280px;
+}
+.event-card.show{ opacity:1; transform:translateY(0); }
+.event-card:hover{ transform:translateY(-4px) scale(1.02); }
+
+.event-card h3{
+  font-size:1.6rem;
+  font-weight:800;
+  color:var(--fucsia);
+  word-break: break-word;
+}
+
+.event-buttons{
+  display:flex;
+  gap:.5rem;
+  margin-top:.7rem;
+  flex-wrap:wrap;
+}
+.event-buttons a{
+  flex:1;
+  text-align:center;
+  padding:.5rem;
+  border-radius:10px;
+  font-weight:700;
+  text-decoration:none;
+  color:#08021a;
+  transition:transform .15s, box-shadow .15s;
+}
+.btn-vote{
+  background:linear-gradient(90deg,var(--verde),var(--amarillo));
+  box-shadow:0 6px 18px rgba(114,255,106,0.3);
+}
+.btn-results{
+  background:linear-gradient(90deg,var(--vio),#b185ff);
+  color:white;
+  box-shadow:0 6px 18px rgba(124,58,237,0.3);
+}
+.event-buttons a:hover{ transform:scale(1.05); }
+
+.action-panel{
+  margin-top:.6rem;
+  display:flex;
+  justify-content:flex-end;
+  gap:.6rem;
+  flex-wrap:wrap;
+}
+.action-btn{
+  font-size:.85rem; padding:.35rem .8rem;
+  border-radius:10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.15);
+  backdrop-filter:blur(6px);
+  display:flex; align-items:center; gap:.3rem;
+  cursor:pointer;
+  transition:transform .15s;
+}
+.action-btn:hover{ transform:scale(1.07); }
+.btn-edit{ color:var(--amarillo); }
+.btn-delete{ color:#ff5b87; }
+
+.modal{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.55);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; visibility:hidden;
+  transition:opacity .2s;
+}
+.modal.show{ opacity:1; visibility:visible; }
+.modal-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:25px;
+  max-width:420px;
+  text-align:center;
+}
+
+button:focus, a:focus{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(255,255,255,0.5);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container mx-auto flex justify-between items-center">
+    <h1>🎉 FunVote</h1>
+    <a href="{{ url_for('crear_evento') }}">➕ Crear Evento</a>
+  </div>
+</header>
+
+<main>
+  <h2>Eventos activos 🗳️</h2>
+  <p class="lead">¡Votaciones dinámicas por criterios! 🎨</p>
+
+  <div id="eventsGrid" class="grid-events">
+    {% for evento in eventos %}
+    <div class="event-card show">
+      <h3>{{ evento['nombre'] }}</h3>
+      <p>{{ evento['descripcion'] }}</p>
+
+      <div class="event-buttons">
+        <a class="btn-vote" href="{{ url_for('votar', evento_id=evento['id']) }}">🗳️ Votar</a>
+        <a class="btn-results" href="{{ url_for('resultados', evento_id=evento['id']) }}">🏆 Resultados</a>
+      </div>
+
+      <div class="action-panel">
+        <a class="action-btn btn-edit" href="{{ url_for('editar_evento', evento_id=evento['id']) }}">✏️ Editar</a>
+        <button class="action-btn btn-delete open-delete-modal" data-url="{{ url_for('eliminar_evento', evento_id=evento['id']) }}">🗑️ Eliminar</button>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-lg mt-8">No hay eventos aún 😅<br>¡Creá uno y empezá la diversión! 🚀</p>
+    {% endfor %}
+  </div>
+</main>
+
+<div id="confirmModal" class="modal">
+  <div class="modal-card">
+    <h2 style="color:var(--fucsia)">¿Estás seguro? 🛑</h2>
+    <p style="opacity:.8" class="mt-2">Este evento se eliminará definitivamente.</p>
+
+    <div class="mt-4 flex justify-center gap-4 flex-wrap">
+      <button id="cancelDelete" class="action-btn btn-edit">Cancelar</button>
+
+      <form id="deleteForm" method="POST" style="display:inline;">
+        <button type="submit" class="action-btn btn-delete">Eliminar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.open-delete-modal').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const modal = document.getElementById('confirmModal');
+    const form = document.getElementById('deleteForm');
+    form.action = btn.dataset.url;
+    modal.classList.add('show');
+  });
+});
+
+document.getElementById('cancelDelete').addEventListener('click',()=>{
+  document.getElementById('confirmModal').classList.remove('show');
+});
+</script>
+
+</body>
+</html>

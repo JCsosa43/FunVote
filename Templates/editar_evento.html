@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editar Evento - FunVote</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;700;900&display=swap');
+
+:root{
+  --fucsia:#ff008c;
+  --amarillo:#ffd93d;
+  --verde:#72ff6a;
+  --vio:#7c3aed;
+  --bg1:#1b0630;
+  --bg2:#2a0f3f;
+}
+
+body{
+  background: radial-gradient(circle at 10% 10%, #25102b 0%, var(--bg1) 30%, var(--bg2) 100%);
+  font-family:'Inter', sans-serif;
+  color:#fff;
+  margin:0;
+  padding:0;
+  min-height:100vh;
+}
+
+header {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: sticky;
+  top:0;
+  z-index:10;
+}
+
+header .container {
+  max-width:90%;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:1rem 1rem;
+}
+
+header h1 {
+  font-family:'Bangers', cursive;
+  font-size:clamp(1.8rem,5vw,2rem);
+  color:#fff;
+  text-shadow: 0 0 8px var(--amarillo);
+}
+
+header a {
+  background: linear-gradient(90deg,#ff008c,#ffd93d);
+  padding: 0.5rem 1rem;
+  font-weight:700;
+  border-radius:12px;
+  color:#08021a;
+  text-decoration:none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 20px rgba(255,0,140,0.25);
+}
+header a:hover{
+  transform: scale(1.05);
+  box-shadow:0 12px 40px rgba(255,0,140,0.35);
+}
+
+main {
+  max-width:90%;
+  margin:auto;
+  padding:2rem 1rem;
+}
+
+h2 {
+  font-family:'Bangers', cursive;
+  font-size:clamp(1.8rem,5vw,2.5rem);
+  text-align:center;
+  margin-bottom:1rem;
+  color: var(--amarillo);
+  text-shadow:0 0 15px rgba(255,255,255,0.4);
+}
+
+form {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:2rem;
+  border-radius:20px;
+  max-width:700px;
+  margin:auto;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.5);
+}
+
+label {
+  display:block;
+  font-weight:700;
+  margin-top:1rem;
+  margin-bottom:0.3rem;
+  color:var(--fucsia);
+}
+
+input, textarea {
+  width:100%;
+  padding:clamp(0.5rem,2vw,0.6rem) clamp(0.6rem,2vw,0.8rem);
+  border-radius:10px;
+  border:none;
+  outline:none;
+  font-size:clamp(0.9rem,2vw,1rem);
+  margin-bottom:1rem;
+  background: rgba(255,255,255,0.05);
+  color:#fff;
+}
+
+textarea{ resize: vertical; }
+
+.participant-item {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+  align-items:center;
+  margin-bottom:0.5rem;
+}
+
+.participant-item input {
+  flex:1 1 60%;
+  min-width:100px;
+}
+
+.remove-btn {
+  background:#ff004c;
+  padding:0.3rem 0.5rem;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+  color:#fff;
+  border:none;
+  flex:1 1 auto;
+  min-width:40px;
+}
+
+.add-participant-btn {
+  background: linear-gradient(90deg,#72ff6a,#ffd93d);
+  padding:0.5rem 1rem;
+  border-radius:12px;
+  font-weight:700;
+  color:#08021a;
+  cursor:pointer;
+  border:none;
+  margin-top:0.5rem;
+  width:100%;
+  max-width:300px;
+}
+
+button.submit-btn {
+  background: linear-gradient(90deg,#72ff6a,#ffd93d);
+  color:#08021a;
+  font-weight:700;
+  padding:0.6rem 1.2rem;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-top:1rem;
+  width:100%;
+  max-width:250px;
+}
+
+button.submit-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(114,255,106,0.4);
+}
+
+.btn-arcade-press{
+  transform: scale(0.95);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2) inset,0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Responsivo */
+@media(max-width:640px){
+  header .container{
+    flex-direction:column;
+    gap:10px;
+  }
+  .participant-item{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .remove-btn{
+    width:100%;
+  }
+  .add-participant-btn{
+    max-width:100%;
+  }
+  button.submit-btn{
+    max-width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="container">
+    <h1>✏️ Editar Evento</h1>
+    <a href="{{ url_for('index') }}">🏠 Volver</a>
+  </div>
+</header>
+
+<main>
+  <form method="POST" id="editForm">
+    <label for="nombre">Nombre del evento</label>
+    <input type="text" name="nombre" id="nombre" value="{{ evento[1] }}" required>
+
+    <label for="descripcion">Descripción</label>
+    <textarea name="descripcion" id="descripcion" rows="4" required>{{ evento[2] }}</textarea>
+
+    <label>Participantes</label>
+    <div id="participantsContainer">
+      {% for p in participantes %}
+      <div class="participant-item">
+        <input type="text" name="participantes[]" value="{{ p[1] }}" required>
+        <button type="button" class="remove-btn">❌</button>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="add-participant-btn">➕ Agregar participante</button>
+
+    <button type="submit" class="submit-btn btn-arcade-press">💾 Guardar cambios</button>
+  </form>
+</main>
+
+<script>
+const container = document.getElementById('participantsContainer');
+const addBtn = document.querySelector('.add-participant-btn');
+
+addBtn.addEventListener('click', ()=>{
+  const div = document.createElement('div');
+  div.classList.add('participant-item');
+  div.innerHTML = `<input type="text" name="participantes[]" required>
+                   <button type="button" class="remove-btn">❌</button>`;
+  container.appendChild(div);
+});
+
+container.addEventListener('click', e=>{
+  if(e.target.classList.contains('remove-btn')){
+    e.target.parentElement.remove();
+  }
+});
+
+// Botón arcade press
+const arcadeBtns = document.querySelectorAll('.btn-arcade-press');
+arcadeBtns.forEach(btn=>{
+  btn.addEventListener('mousedown', ()=> btn.classList.add('btn-arcade-press'));
+  btn.addEventListener('mouseup', ()=> btn.classList.remove('btn-arcade-press'));
+  btn.addEventListener('mouseleave', ()=> btn.classList.remove('btn-arcade-press'));
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Resultados — {{ evento.get('nombre','Evento') }}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;700;900&display=swap');
+
+:root{
+  --oro:#FFD700;
+  --plata:#C0C0C0;
+  --cobre:#B87333;
+  --neutro:#7c3aed;
+  --fucsia:#ff008c;
+  --amarillo:#ffd93d;
+  --bg1:#14061a;
+  --bg2:#241033;
+}
+
+body{
+  min-height:100vh;
+  background: linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:#fff;
+  font-family: 'Inter', sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:40px 20px;
+  text-align:center;
+}
+
+.wrap{
+  width:100%;
+  max-width:1500px;
+}
+
+h1{
+  font-family:'Bangers', cursive;
+  font-size:12rem;
+  line-height:1.1;
+  letter-spacing:6px;
+  color:var(--plata);
+  text-shadow:0 0 60px rgba(255,255,255,0.7);
+  margin-bottom:30px;
+}
+
+.evento-nombre{
+  font-family:'Bangers', cursive;
+  font-size:4rem;
+  color:var(--oro);
+  text-shadow:0 0 30px rgba(255,217,61,0.7);
+  margin-bottom:25px;
+}
+
+p.lead{
+  font-size:1.4rem;
+  opacity:.85;
+  margin-bottom:50px;
+}
+
+.bars{
+  display:flex;
+  flex-wrap: wrap;
+  justify-content:center;
+  align-items:flex-end;
+  gap:30px;
+  margin-top:50px;
+  position:relative;
+}
+
+.col{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  min-width:120px;
+}
+
+.bar{
+  width:100%;
+  border-radius:16px 16px 10px 10px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  transition: height 1.2s cubic-bezier(.2,.9,.2,1), box-shadow 0.6s ease-in-out;
+  box-shadow:0 10px 40px rgba(0,0,0,0.55);
+  position: relative;
+}
+
+.bar.first { 
+  background: linear-gradient(180deg,var(--oro),#ffeb7d); 
+  animation: glowOro 1.4s ease-in-out infinite alternate; 
+}
+.bar.second { 
+  background: linear-gradient(180deg,var(--plata),#e0e0e0); 
+  animation: glowPlata 1.4s ease-in-out infinite alternate; 
+}
+.bar.third { 
+  background: linear-gradient(180deg,var(--cobre),#cd7f32); 
+  animation: glowCobre 1.4s ease-in-out infinite alternate; 
+}
+.bar.regular { 
+  background: var(--neutro); 
+}
+
+@keyframes glowOro {
+  0% { box-shadow:0 10px 40px rgba(255,215,0,0.6),0 0 20px rgba(255,215,0,0.4);}
+  50% { box-shadow:0 15px 60px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.6);}
+  100% { box-shadow:0 10px 40px rgba(255,215,0,0.6),0 0 20px rgba(255,215,0,0.4);}
+}
+
+@keyframes glowPlata {
+  0% { box-shadow:0 10px 30px rgba(192,192,192,0.6);}
+  50% { box-shadow:0 15px 40px rgba(192,192,192,0.8);}
+  100% { box-shadow:0 10px 30px rgba(192,192,192,0.6);}
+}
+
+@keyframes glowCobre {
+  0% { box-shadow:0 10px 30px rgba(184,115,51,0.6);}
+  50% { box-shadow:0 15px 40px rgba(184,115,51,0.8);}
+  100% { box-shadow:0 10px 30px rgba(184,115,51,0.6);}
+}
+
+.votes-num{
+  margin-bottom:10px;
+  font-weight:900;
+  font-size:1.3rem;
+  color:#ffd93d;
+  transition: transform 0.15s ease;
+}
+
+.label{
+  font-weight:800;
+  margin-top:14px;
+  font-size:1.1rem;
+  max-width:120px;
+  word-wrap:break-word;
+}
+
+.medalla{
+  font-size:3rem;
+  position:absolute;
+  top:-60px;
+  opacity:0;
+  animation: bounce 0.8s ease forwards;
+}
+
+@keyframes bounce{
+  0%{ transform: translateY(-20px); opacity:0; }
+  50%{ transform: translateY(0px); opacity:1; }
+  100%{ transform: translateY(-10px); opacity:1; }
+}
+
+.winner-banner{
+  margin-top:50px;
+  padding:24px;
+  background:linear-gradient(90deg,var(--oro),var(--plata));
+  border-radius:20px;
+  color:#08021a;
+  font-size:2rem;
+  font-weight:900;
+  text-transform:uppercase;
+  box-shadow:0 16px 35px rgba(255,217,61,0.35);
+  position: relative;
+}
+
+.btn-home{
+  display:inline-block;
+  margin-top:40px;
+  padding:12px 24px;
+  border-radius:14px;
+  font-weight:900;
+  color:#08021a;
+  background: linear-gradient(90deg,var(--fucsia),var(--amarillo));
+  box-shadow:0 10px 35px rgba(255,0,140,0.35);
+  transition: transform .15s;
+  text-decoration:none;
+}
+.btn-home:hover{ transform: translateY(-2px); }
+
+@media(max-width:1200px){
+  h1{ font-size:9rem; }
+  .evento-nombre{ font-size:3.5rem; }
+  .bar{ width:90px; }
+}
+@media(max-width:800px){
+  h1{ font-size:6.5rem; }
+  .evento-nombre{ font-size:2.8rem; }
+  .bar{ width:70px; }
+}
+@media(max-width:500px){
+  h1{ font-size:5rem; }
+  .evento-nombre{ font-size:2rem; }
+  .bar{ width:60px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>RESULTADOS</h1>
+  <div class="evento-nombre">{{ evento.get('nombre','Evento') }}</div>
+  <p class="lead">{{ evento.get('descripcion','') }}</p>
+</header>
+
+{% set votos = evento.get('votos', {}) %}
+{% set total = votos.values()|map('int')|sum %}
+{% set sorted_part = evento.get('podio', []) %}
+{% set ganador = evento.get('ganador') %}
+
+{% if total == 0 %}
+  <div class="mt-8 opacity-80 text-2xl">No hay votos aún 🙃</div>
+  <a href="/" class="btn-home">🏠 Volver al inicio</a>
+{% else %}
+
+{% set top_votos = sorted_part[0][1] %}
+{% set empates = sorted_part|selectattr('1','equalto',top_votos)|map(attribute=0)|list %}
+
+<div class="bars">
+  {% for participante in sorted_part %}
+    {% set idx = loop.index0 %}
+    {% set name = participante[0] %}
+    {% set v = participante[1] %}
+
+    {% if name in empates %}
+      {% set cls = 'first' %}
+      {% set medalla_emoji = '🥇' %}
+    {% elif idx == 1 %}{% set cls='second' %}{% set medalla_emoji='🥈' %}
+    {% elif idx == 2 %}{% set cls='third' %}{% set medalla_emoji='🥉' %}
+    {% else %}{% set cls='regular' %}{% set medalla_emoji='' %}{% endif %}
+
+    {% set raw_height = (v / total * 380)|round(0,'floor') %}
+    {% set height = raw_height if raw_height > 40 else 40 %}
+
+    <div class="col">
+      {% if medalla_emoji %}
+        <div class="medalla" style="animation-delay:{{ idx*0.3 }}s;">
+          {{ medalla_emoji }}
+        </div>
+      {% endif %}
+
+      <div class="votes-num">0</div>
+      <div class="bar {{ cls }}" style="height:0px;" data-target="{{ height }}" data-votes="{{ v }}"></div>
+      <div class="label">{{ name }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="winner-banner" style="{% if not ganador %}background:linear-gradient(90deg,#ff008c,#7c3aed); color:white;{% endif %}">
+  {% if ganador %}
+    🎉 El ganador de {{ evento.get('nombre','Evento') }} es {{ ganador }} 🎉
+  {% else %}
+    😱 ¡EMPATE! 😱
+    <br>
+    {% for e in empates %}
+      {{ e }}{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<a href="/" class="btn-home">🏠 Volver al inicio</a>
+{% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+(function(){
+  const sorted_part = {{ sorted_part|default([])|tojson }}; 
+  sorted_part.forEach((p, idx)=>{
+    setTimeout(()=>{
+      if(idx < 3){
+        confetti({
+          particleCount:80,
+          spread:140,
+          origin:{y:0.2},
+          colors: idx===0?['#FFD700','#FFFACD','#FFD93D']: idx===1?['#C0C0C0','#E0E0E0','#F0F0F0']: ['#B87333','#D2691E','#CD7F32']
+        });
+      }
+    }, idx*600);
+  });
+})();
+
+window.addEventListener('load', ()=>{
+  document.querySelectorAll('.bar').forEach(bar=>{
+    const targetHeight = bar.dataset.target;
+    const votes = parseInt(bar.dataset.votes);
+    const votesNum = bar.previousElementSibling;
+    let current = 0;
+    let ease = 0;
+
+    const interval = setInterval(()=>{
+      ease += 0.05;
+      const progress = Math.min(ease*ease,1);
+      const displayedVotes = Math.floor(progress * votes);
+      votesNum.textContent = displayedVotes;
+
+      votesNum.style.transform = `scale(${1 + 0.3 * Math.sin(progress * Math.PI)})`;
+
+      bar.style.height = Math.floor(progress * targetHeight) + 'px';
+
+      if(progress >= 1){
+        confetti({
+          particleCount: 20,
+          spread: 60,
+          origin: { y: 1, x: bar.getBoundingClientRect().left / window.innerWidth },
+          colors: ['#FFD700','#C0C0C0','#B87333','#ff008c','#ffd93d','#7c3aed','#72ff6a']
+        });
+        votesNum.textContent = votes;
+        votesNum.style.transform = 'scale(1)';
+        bar.style.height = targetHeight+'px';
+        clearInterval(interval);
+      }
+    }, 20);
+  });
+});
+</script>
+</body>
+</html>

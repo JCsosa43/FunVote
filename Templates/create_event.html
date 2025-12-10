@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FunVote - Crear Evento</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;700;900&display=swap');
+
+:root{
+  --fucsia:#ff008c;
+  --amarillo:#ffd93d;
+  --verde:#72ff6a;
+  --vio:#7c3aed;
+  --bg1:#12001e;
+  --bg2:#1a0130;
+  --bg3:#2a0f3f;
+}
+
+body{
+  background: radial-gradient(circle at 20% 20%, var(--bg1), var(--bg2) 40%, var(--bg3) 100%);
+  color:white;
+  font-family:'Inter', sans-serif;
+  margin:0;
+  min-height:100vh;
+  display:flex; justify-content:center; align-items:flex-start;
+  padding:5vw 2vw;
+}
+
+.wrap{
+  width:100%;
+  max-width:900px;
+}
+
+h1{
+  font-family:'Bangers', cursive;
+  font-size:clamp(2.5rem,5vw,4rem);
+  color:var(--amarillo);
+  margin-bottom:20px;
+  text-align:center;
+  text-shadow:0 0 12px var(--amarillo);
+}
+
+p.lead{
+  text-align:center;
+  font-size:clamp(1rem,2.5vw,1.2rem);
+  opacity:.85;
+  margin-bottom:40px;
+}
+
+.card{
+  background: rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  border-radius:18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+  padding:28px;
+  margin-bottom:30px;
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.65);
+}
+
+label{
+  font-weight:700;
+  margin-bottom:6px;
+  display:block;
+}
+input[type=text], textarea{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:none;
+  margin-bottom:20px;
+  font-size:clamp(0.9rem,2vw,1rem);
+  font-weight:500;
+  background: rgba(255,255,255,0.05);
+  color:#fff;
+  outline:none;
+}
+
+.btn-arcade{
+  padding:12px 22px;
+  border-radius:14px;
+  background: linear-gradient(90deg,#ff008c,#ffd93d);
+  color:#08021a;
+  font-weight:900;
+  font-size:clamp(0.9rem,2vw,1rem);
+  cursor:pointer;
+  border:none;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-arcade:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(255,0,140,0.35);
+}
+
+.events-list{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.event-card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:14px;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.45);
+  transition: transform .25s ease, box-shadow .25s ease, opacity .4s ease;
+  opacity:0;
+  transform:translateY(15px);
+}
+.event-card.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.event-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 40px rgba(0,0,0,0.6);
+}
+.event-title{
+  font-weight:800;
+  font-size:clamp(1rem,2.5vw,1.2rem);
+  color:#fff;
+}
+.event-desc{
+  font-size:clamp(0.85rem,2vw,0.95rem);
+  opacity:.7;
+}
+.event-buttons{
+  display:flex;
+  gap:10px;
+}
+
+.btn-edit{
+  background: linear-gradient(90deg,#7c3aed,#b185ff);
+  color:#fff;
+}
+.btn-delete{
+  background: linear-gradient(90deg,#ff008c,#ff5a5a);
+  color:#fff;
+}
+
+.tag-box{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  background: rgba(255,255,255,0.05);
+  padding:10px;
+  border-radius:12px;
+  cursor:text;
+  min-height:55px;
+  margin-bottom:20px;
+  align-items:center;
+}
+.tag{
+  background: linear-gradient(90deg,#7c3aed,#b185ff);
+  color:white;
+  padding:6px 12px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+}
+.tag button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:1rem;
+  cursor:pointer;
+  line-height:1;
+}
+#tagInput{
+  flex:1;
+  background:none;
+  border:none;
+  outline:none;
+  color:white;
+  padding:6px;
+  min-width:100px;
+}
+
+h2{
+  margin-bottom:16px;
+  color:var(--amarillo);
+  font-family:'Bangers', cursive;
+  font-size:clamp(1.5rem,4vw,2rem);
+  text-shadow:0 0 12px var(--amarillo);
+}
+
+/* Responsivo */
+@media(max-width:640px){
+  .event-card{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .event-buttons{
+    width:100%;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+  }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CREAR EVENTO</h1>
+  <p class="lead">Agregá un nuevo evento y sus participantes</p>
+
+  <div class="card">
+    <form method="POST" action="/create">
+      <label>Nombre del evento</label>
+      <input type="text" name="nombre_evento" required>
+
+      <label>Descripción</label>
+      <textarea name="descripcion_evento" rows="3" required></textarea>
+
+      <label>Participantes</label>
+      <div class="tag-box" id="tagBox">
+        <input id="tagInput" type="text" placeholder="Escribí un nombre y presioná Enter">
+        <button type="button" id="addTagBtn" class="btn-arcade ml-2">Agregar</button>
+      </div>
+
+      <input type="hidden" id="participantesHidden" name="participantes">
+
+      <div class="text-center">
+        <button type="submit" class="btn-arcade">Crear evento</button>
+      </div>
+    </form>
+  </div>
+
+  <h2>Eventos existentes</h2>
+  <div class="events-list">
+    {% for evento in eventos %}
+    <div class="event-card">
+      <div>
+        <div class="event-title">{{ evento[1] }}</div>
+        <div class="event-desc">{{ evento[2] }}</div>
+      </div>
+      <div class="event-buttons">
+        <form method="GET" action="/evento/{{ evento[0] }}/editar">
+          <button type="submit" class="btn-arcade btn-edit">Editar</button>
+        </form>
+        <form method="POST" action="/evento/{{ evento[0] }}/eliminar" onsubmit="return confirm('¿Seguro querés eliminar este evento?');">
+          <button type="submit" class="btn-arcade btn-delete">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+const tagBox = document.getElementById("tagBox");
+const tagInput = document.getElementById("tagInput");
+const addBtn = document.getElementById("addTagBtn");
+const hidden = document.getElementById("participantesHidden");
+let tags = [];
+
+function renderTags(){
+  tagBox.querySelectorAll(".tag").forEach(e=>e.remove());
+  tags.forEach((t,i)=>{
+    const tagEl = document.createElement("div");
+    tagEl.className="tag";
+    tagEl.innerHTML = `${t} <button onclick="removeTag(${i})">&times;</button>`;
+    tagBox.insertBefore(tagEl, tagInput);
+  });
+  hidden.value = tags.join(",");
+}
+
+function removeTag(i){ tags.splice(i,1); renderTags(); }
+
+function agregarTag(){
+  const nombre = tagInput.value.trim();
+  if(!nombre) return;
+
+  if(tags.includes(nombre)){
+    alert("Ese participante ya fue agregado 😅");
+    return;
+  }
+
+  tags.push(nombre);
+  tagInput.value = "";
+  renderTags();
+}
+
+tagInput.addEventListener("keydown", e=>{
+  if(e.key === "Enter") {
+    e.preventDefault();
+    agregarTag();
+  }
+});
+addBtn.addEventListener("click", agregarTag);
+
+const eventCards = document.querySelectorAll('.event-card');
+eventCards.forEach((card,i)=>{
+  setTimeout(()=> card.classList.add('show'), i*150);
+});
+</script>
+</body>
+</html>
