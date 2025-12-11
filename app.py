@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response, session
 import sqlite3
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 DB_NAME = "funvote.db"
 app.secret_key = "una_clave_super_secreta"  # 🔑 Para firmar cookies y sesiones
 
@@ -239,4 +239,7 @@ def resultados(evento_id):
 # -------------------------------------------
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))  # toma el puerto que Render asigne
+    app.run(host="0.0.0.0", port=port, debug=True)
+
